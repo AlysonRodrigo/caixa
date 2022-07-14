@@ -6,8 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="CAIXA")
 public class CaixaModel {
 	private @Id @GeneratedValue(strategy = GenerationType.IDENTITY)long id;
 	private Double entrada;
@@ -15,6 +17,7 @@ public class CaixaModel {
 	private Date data;
 	private Double total;
 	private String descricao;
+	private String soma;
 	
 	public long getId() {
 		return id;
@@ -53,5 +56,12 @@ public class CaixaModel {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
+	public String getSoma() {
+		return soma;
+	}
+	public void setSoma(String soma) {
+		this.soma = soma;
+	}
+	
 	
 }
