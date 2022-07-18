@@ -1,7 +1,5 @@
 package com.caixa.caixa.Model;
 
-import java.sql.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,10 +12,9 @@ public class CaixaModel {
 	private @Id @GeneratedValue(strategy = GenerationType.IDENTITY)long id;
 	private Double entrada;
 	private Double saida;
-	private Date data;
+	private String data;
 	private Double total;
 	private String descricao;
-	private String soma;
 	
 	public long getId() {
 		return id;
@@ -37,10 +34,10 @@ public class CaixaModel {
 	public void setSaida(Double saida) {
 		this.saida = saida;
 	}
-	public Date getData() {
+	public String getData() {
 		return data;
 	}
-	public void setData(Date data) {
+	public void setData(String data) {
 		this.data = data;
 	}
 	public Double getTotal() {
@@ -56,12 +53,5 @@ public class CaixaModel {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-	public String getSoma() {
-		return soma;
-	}
-	public void setSoma(String soma) {
-		this.soma = soma;
-	}
-	
 	
 }

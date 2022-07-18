@@ -1,15 +1,16 @@
 package com.caixa.caixa.Controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import javax.management.Query;
-import javax.swing.JTextField;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,68 +23,70 @@ import com.caixa.caixa.Repository.CaixaRepositorio;
 @RequestMapping("/caixa")
 public class CaixaControle {
 	private @Autowired CaixaRepositorio repositorio;
-	CaixaModel att;
+	Double totalParcial;
 	
 	
 	@PutMapping("/att")
 	public ResponseEntity<CaixaModel> Att(@Valid @RequestBody CaixaModel att) {
-		List<CaixaModel> Lista = repositorio.findAll();
-		att.getId();
-		att.getTotal();
-		System.out.println("------------------1 "+att.getEntrada());
-		
-		System.out.println("------------------2 "+att.getEntrada());
 
+		LocalDate data1 = LocalDate.now();
+		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd/MM/yyyy");  
+		String datas = data1.format(myFormatObj);
+		
+		List<CaixaModel> Lista = repositorio.findAll();
 		if(att.getSaida()<0) {
-				att.setSaida(att.getSaida()*-1);
+			att.setSaida(att.getSaida()*-1);
 		}
 		if(att.getSaida()==null) {
-				att.setSaida(0.0);
+			att.setSaida(0.0);
 		}
 		if(att.getEntrada()<0) {
-				att.setEntrada(att.getEntrada()*-1);
+			att.setEntrada(att.getEntrada()*-1);
 		}
 		if(att.getEntrada()==null) {
-				att.setEntrada(0.0);
+			att.setEntrada(0.0);
 		}
-		if(att.getTotal()==null) {
-			att.setTotal(att.getSaida()+ att.getEntrada());
-	}
-		System.out.println("--1 id-- "+ att.getId());
-		System.out.println("--2 total-- "+ att.getTotal());
-		System.out.println("--3 entrada-- "+ att.getEntrada());
-		System.out.println("--4 saida-- "+ att.getSaida());
-		System.out.println("--antes--__----____");
-			for(CaixaModel list:Lista) {
-				list.getId();
-				list.getSaida();
-				list.getEntrada();
-				list.getTotal();
-				att.setTotal(list.getSaida()+ list.getEntrada()+list.getTotal());
-				System.out.println("--1 id-- "+ list.getId());
-				System.out.println("--2 total-- "+ list.getTotal());
-				System.out.println("--3 entrada-- "+ list.getEntrada());
-				System.out.println("--4 saida-- "+ list.getSaida());
-				
-			}
-			System.out.println("--depois--__--");
-			System.out.println("--1 id-- "+ att.getId());
-			System.out.println("--2 total-- "+ att.getTotal());
-			System.out.println("--3 entrada-- "+ att.getEntrada());
-			System.out.println("--4 saida-- "+ att.getSaida());
-			
-		return ResponseEntity.status(201).body(repositorio.save(att));
+		if(att.getTotal()==null ) {
+			att.setTotal(att.getEntrada()-att.getSaida());
+		}
 		
+		for(CaixaModel list:Lista) {
+			if(list.getId()==1) {
+				att.setTotal(0.0);
+			}
+			if(att.getId()==0) {
+				att.setTotal(list.getTotal()+att.getEntrada()-att.getSaida());
+			}
+			if(list.getId()==att.getId()) {
+				att.setTotal(att.getEntrada()-att.getSaida()+ totalParcial);
+			}
+			if(list.getId()>att.getId() && att.getId()!=0) {
+				list.setTotal(totalParcial-list.getSaida()+list.getEntrada());
+			}
+			totalParcial= list.getTotal();
+		}
+		att.setData(datas);
+		return ResponseEntity.status(201).body(repositorio.save(att));
 	}
-/*	@GetMapping("/todos")
-	public ResponseEntity<List<CaixaModel>> pegarTodas() {
+	
+	
+	@DeleteMapping("/deletar/{id}")
+	public void deletarClientePorId(@PathVariable(value = "id") Long id) {
+		repositorio.deleteById(id);
+	}
+	
+	
+	
+	@GetMapping("/todos")
+	public ResponseEntity<List<CaixaModel>> pegarTodes() {
 		List<CaixaModel> objetoLista = repositorio.findAll();
-		List<CaixaModel> objetoLista = repositorio.findAllByTotal(att.getTotal());
+
 		if (objetoLista.isEmpty()) {
 			return ResponseEntity.status(204).build();
 		} else {
 			return ResponseEntity.status(200).body(objetoLista);
 		}
-	}*/
+
+	}
 	
 }
