@@ -10,8 +10,7 @@ import javax.persistence.Table;
 @Table(name="CAIXA")
 public class CaixaModel {
 	private @Id @GeneratedValue(strategy = GenerationType.IDENTITY)long id;
-	private Double entrada;
-	private Double saida;
+	private Double entradaSaida;
 	private String data;
 	private Double total;
 	private String descricao;
@@ -21,18 +20,6 @@ public class CaixaModel {
 	}
 	public void setId(long id) {
 		this.id = id;
-	}
-	public Double getEntrada() {
-		return entrada;
-	}
-	public void setEntrada(Double entrada) {
-		this.entrada = entrada;
-	}
-	public Double getSaida() {
-		return saida;
-	}
-	public void setSaida(Double saida) {
-		this.saida = saida;
 	}
 	public String getData() {
 		return data;
@@ -53,5 +40,12 @@ public class CaixaModel {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
+	public Double getEntradaSaida() {
+		return entradaSaida;
+	}
+	public void setEntradaSaida(Double entradaSaida) {
+		this.entradaSaida = entradaSaida;
+	}
+	
 	
 }

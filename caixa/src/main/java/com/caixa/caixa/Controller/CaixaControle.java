@@ -3,6 +3,7 @@ package com.caixa.caixa.Controller;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.caixa.caixa.Model.CaixaModel;
 import com.caixa.caixa.Repository.CaixaRepositorio;
 
+import net.bytebuddy.asm.Advice.OffsetMapping.Sort;
+
 @RestController
 @RequestMapping("/caixa")
 public class CaixaControle {
@@ -34,38 +37,32 @@ public class CaixaControle {
 		String datas = data1.format(myFormatObj);
 		
 		List<CaixaModel> Lista = repositorio.findAll();
-		if(att.getSaida()<0) {
-			att.setSaida(att.getSaida()*-1);
-		}
-		if(att.getSaida()==null) {
-			att.setSaida(0.0);
-		}
-		if(att.getEntrada()<0) {
-			att.setEntrada(att.getEntrada()*-1);
-		}
-		if(att.getEntrada()==null) {
-			att.setEntrada(0.0);
+		if(att.getEntradaSaida()==null) {
+			att.setEntradaSaida(0.0);
 		}
 		if(att.getTotal()==null ) {
-			att.setTotal(att.getEntrada()-att.getSaida());
+			att.setTotal(att.getEntradaSaida());
 		}
-		
+		totalParcial=0.0;
 		for(CaixaModel list:Lista) {
 			if(list.getId()==1) {
 				att.setTotal(0.0);
 			}
 			if(att.getId()==0) {
-				att.setTotal(list.getTotal()+att.getEntrada()-att.getSaida());
+				att.setTotal(list.getTotal()+att.getEntradaSaida());
 			}
 			if(list.getId()==att.getId()) {
-				att.setTotal(att.getEntrada()-att.getSaida()+ totalParcial);
+				att.setTotal(att.getEntradaSaida()+totalParcial);
 			}
 			if(list.getId()>att.getId() && att.getId()!=0) {
-				list.setTotal(totalParcial-list.getSaida()+list.getEntrada());
+				list.setTotal(totalParcial+list.getEntradaSaida());
 			}
 			totalParcial= list.getTotal();
+			
 		}
-		att.setData(datas);
+		if(att.getData()==null) {
+			att.setData(datas);
+		}
 		return ResponseEntity.status(201).body(repositorio.save(att));
 	}
 	
@@ -75,16 +72,14 @@ public class CaixaControle {
 		repositorio.deleteById(id);
 	}
 	
-	
-	
 	@GetMapping("/todos")
 	public ResponseEntity<List<CaixaModel>> pegarTodes() {
-		List<CaixaModel> objetoLista = repositorio.findAll();
+		List<CaixaModel> Listas = repositorio.findAll();
 
-		if (objetoLista.isEmpty()) {
+		if (Listas.isEmpty()) {
 			return ResponseEntity.status(204).build();
 		} else {
-			return ResponseEntity.status(200).body(objetoLista);
+			return ResponseEntity.status(200).body(Listas);
 		}
 
 	}
